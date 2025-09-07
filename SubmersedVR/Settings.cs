@@ -28,6 +28,9 @@ namespace SubmersedVR
         public static float SnowBikeSnapTurningAngle = 45.0f;
         public static event FloatChanged SnowBikeSnapTurningAngleChanged;
 
+        //The game's default ForwardSprintModifier is 2.0f (PlayerMotor.forwardSprintModifier), but this feels slow in VR
+        public static float ForwardSprintModifier = 2.25f;
+
         public static bool IsDebugEnabled;
         public static event BooleanChanged IsDebugChanged;
        
@@ -249,6 +252,13 @@ namespace SubmersedVR
                     SnowBikeSnapTurningAngleChanged(value);
                 }
             });
+
+            panel.AddSliderOption(tab, "Sprint Velocity Multiplier", ForwardSprintModifier, 2f, 3f, ForwardSprintModifier, 0.25f, (value) =>
+            {
+                ForwardSprintModifier = value;
+                //If the player is currently in-game, immediately apply the new value to PlayerMotor to update sprint speed in real time
+                Sprint.OnForwardSprintModifierChanged();
+            }, SliderLabelMode.Float, "0.00");
 
             panel.AddHeading(tab, "Immersion");
             panel.AddToggleOption(tab, "Articulated Hands", ArticulatedHands, (value) => { ArticulatedHands = value;  }, "Hands animate based on the movement of your physical hands.");
