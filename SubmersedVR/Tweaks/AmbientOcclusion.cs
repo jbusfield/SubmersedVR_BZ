@@ -22,7 +22,12 @@ namespace SubmersedVR
  
         public static void OnAmbientOcclusionSettingsChanged(Camera camera)
         {
-            AmplifyOcclusionEffect effect = camera?.gameObject.GetComponent<AmplifyOcclusionEffect>();
+            // Unity fake-null: a destroyed camera passes C#'s `?.` and would throw on .gameObject
+            if ((UnityEngine.Object)(object)camera == null)
+            {
+                return;
+            }
+            AmplifyOcclusionEffect effect = camera.gameObject.GetComponent<AmplifyOcclusionEffect>();
             if (effect != null)
             {
                 effect.enabled = Settings.AOEnabled; //enabled;
@@ -41,18 +46,23 @@ namespace SubmersedVR
                 effect.FilterBlending = Settings.AOTemporalFilterBlending; //FilterEnabled;
                 effect.FilterResponse = Settings.AOTemporalFilterResponse; //FilterEnabled;
 
-                Mod.logger.LogInfo($"OnUseAmbientOcclusionChanged:\nenabled:{effect.enabled}\nfilter enabled:{effect.FilterEnabled}\nsample count: {effect.SampleCount}\nmethod:{effect.ApplyMethod}\nperpixelnormals:{effect.PerPixelNormals}\nintensity:{effect.Intensity}");
+                Mod.logger.LogDebug($"OnUseAmbientOcclusionChanged:\nenabled:{effect.enabled}\nfilter enabled:{effect.FilterEnabled}\nsample count: {effect.SampleCount}\nmethod:{effect.ApplyMethod}\nperpixelnormals:{effect.PerPixelNormals}\nintensity:{effect.Intensity}");
             }
 
         }
 
         public static void AddOcclusionEffect(Camera camera)
         {
+            // Unity fake-null: a destroyed camera passes C#'s `?.` and would throw on .gameObject
+            if ((UnityEngine.Object)(object)camera == null)
+            {
+                return;
+            }
             if(!initialized)
             {
                 Init();
             }
-            AmplifyOcclusionEffect effect = camera?.gameObject.GetComponent<AmplifyOcclusionEffect>();
+            AmplifyOcclusionEffect effect = camera.gameObject.GetComponent<AmplifyOcclusionEffect>();
             if (effect != null)
             {
                 return;

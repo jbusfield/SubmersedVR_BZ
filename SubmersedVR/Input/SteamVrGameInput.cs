@@ -746,16 +746,24 @@ namespace SubmersedVR
 
         public static float GetTooltipScaler()
         {
+            // null guards (re-applied from the SMB line): Player.main (title
+            // screen) and GetPDA() (menus) can be null or destroyed (Unity
+            // fake-null) - SV hit 399 NREs from the same pattern.
+            // IngameMenu.main is null at the title screen as well.
             if (pda == null)
             {
-                pda = Player.main?.GetPDA();
+                var pl = Player.main;
+                if ((UnityEngine.Object)(object)pl != null)
+                {
+                    pda = pl.GetPDA();
+                }
             }
-            if(pda == null || IngameMenu.main.isActiveAndEnabled) //Dont scale it if PDA is Opened but in the Pause Menu
+            if (pda == null || (IngameMenu.main != null && IngameMenu.main.isActiveAndEnabled)) //Dont scale it if PDA is Opened but in the Pause Menu
             {
                 return 1.0f;
             }
             return pda.isInUse ? PDA_ScaleFactor : 1.0f;
-            
+
         }
 
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
